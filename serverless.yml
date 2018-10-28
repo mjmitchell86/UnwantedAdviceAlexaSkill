@@ -1,0 +1,57 @@
+service: unwanted-advice
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  region: us-east-1
+  logRetentionInDays: 3
+
+plugins:
+  - serverless-alexa-skills
+  
+custom:
+  alexa:
+    vendorId: {{INSERVENDORIDHERE}}
+    clientId: {{INSERTIDHERE}}
+    clientSecret: {{INSERTSECRETHERE}}
+    skills:
+      - id: {{INSERTSKILLIDHERE}}
+        manifest:
+          publishingInformation:
+            locales:
+              en-US:
+                name: UnwantedAdvice
+          apis:
+            custom:
+              endpoint:
+                uri:  {{INSERTLAMBDAARNHERE}}            
+          manifestVersion: '1.0'
+        models:
+          en-US:
+            interactionModel:
+              languageModel:
+                invocationName: unwanted advice
+                intents:
+                  - name: AdviceIntent
+                    samples:
+                    - 'advice'
+                    - 'unwanted advice'
+                    - 'give me some advice'
+                    - 'give me some unwanted advice'
+                  - name: AMAZON.HelpIntent
+                    samples: []
+                  - name: AMAZON.CancelIntent
+                    samples: []
+                  - name: AMAZON.StopIntent
+                    samples: []
+
+package:
+ exclude:
+   - .serverless/
+   - UnwantedAdviceIcons/
+
+functions:
+  UnwantedAdvice:
+    handler: handler.advice
+    events:
+      - alexaSkill: ${self:custom.alexa.skills.0.id}
